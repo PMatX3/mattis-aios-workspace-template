@@ -20,11 +20,13 @@ echo ""
 
 mkdir -p "$WT_DIR"
 
-declare -A WT_DESC=(
-  [delivery]="client delivery artifacts (UAT plans, runbooks, handover packs)"
-  [commercial]="proposals, content, outbound, pricing"
-  [research]="analysis, strategy thinking, background research"
-)
+wt_desc() {
+  case "$1" in
+    delivery)  echo "client delivery artifacts (UAT plans, runbooks, handover packs)" ;;
+    commercial) echo "proposals, content, outbound, pricing" ;;
+    research)  echo "analysis, strategy thinking, background research" ;;
+  esac
+}
 
 for name in delivery commercial research; do
   if ! git -C "$REPO" show-ref --verify --quiet "refs/heads/$name"; then
@@ -36,7 +38,7 @@ for name in delivery commercial research; do
 
   if [ ! -d "$WT_DIR/$name" ]; then
     git -C "$REPO" worktree add "$WT_DIR/$name" "$name" --quiet
-    echo "  [+] worktree: .worktrees/$name — ${WT_DESC[$name]}"
+    echo "  [+] worktree: .worktrees/$name — $(wt_desc $name)"
   else
     echo "  [=] worktree: .worktrees/$name (exists)"
   fi
