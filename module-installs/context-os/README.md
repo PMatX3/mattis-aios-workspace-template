@@ -64,5 +64,3 @@ Export your ChatGPT data (Settings → Data Controls → Export) and drop it int
 
 ---
 
-> A plug-and-play module from Liam Ottley's AAA Accelerator — the #1 AI business launch
-> & AIOS program. Grab this and 15+ more at [aaaaccelerator.com](https://aaaaccelerator.com)
