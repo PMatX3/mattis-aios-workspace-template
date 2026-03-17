@@ -1,7 +1,6 @@
 # ContextOS — AIOS Module Installer
 
-> A plug-and-play module from the AAA Accelerator.
-> Grab this and 15+ more at [aaaaccelerator.com](https://aaaaccelerator.com)
+> ContextOS: the foundation module for your AI Operating System.
 
 <!-- MODULE METADATA
 module: context-os
@@ -385,5 +384,3 @@ Now that your context layer is built, here are your options:
 
 ---
 
-> A plug-and-play module from Liam Ottley's AAA Accelerator — the #1 AI business launch
-> & AIOS program. Grab this and 15+ more at [aaaaccelerator.com](https://aaaaccelerator.com)
