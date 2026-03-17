@@ -32,7 +32,9 @@ Claude should always orient itself through `/prime` at session start, then act w
 │   └── commands/          # Slash commands Claude can execute
 │       ├── prime.md       # /prime — session initialization
 │       ├── create-plan.md  # /create-plan — create implementation plans
-│       └── implement.md   # /implement — execute plans
+│       ├── implement.md   # /implement — execute plans
+│       ├── share.md       # /share — package systems for sharing
+│       └── task-audit.md  # /task-audit — map tasks, score automation potential
 ├── context/               # Background context about you and your business
 │   ├── business-info.md   # What the business does, who it serves, key offers
 │   ├── personal-info.md   # Your role, responsibilities, how workspace helps
@@ -54,6 +56,7 @@ Claude should always orient itself through `/prime` at session start, then act w
 │       ├── handover-pack.md
 │       └── change-request.md
 ├── artifacts/             # Project-specific artifacts (UAT checklists, etc.)
+├── shares/                # Packaged systems for sharing (created by /share)
 ├── module-installs/       # AIOS module installers
 └── scripts/               # Automation scripts
 ```
@@ -68,6 +71,7 @@ Claude should always orient itself through `/prime` at session start, then act w
 | `outputs/`   | Deliverables. Key file: `project-register.md` — update weekly.                    |
 | `reference/` | Scorecard definitions, shell setup, and 6 delivery templates.                      |
 | `artifacts/` | Project-specific outputs (UAT packs, runbooks for specific clients).               |
+| `shares/`    | Packaged systems for sharing. Created by `/share`, ready to hand off.              |
 | `scripts/`   | Automation tooling.                                                                 |
 
 ---
@@ -112,6 +116,20 @@ Example: `/create-plan add a competitor analysis command`
 Reads the plan, executes each step in order, validates the work, and updates the plan status.
 
 Example: `/implement plans/2026-01-28-competitor-analysis-command.md`
+
+### /share [system or feature]
+
+**Purpose:** Package a system or feature from your workspace for sharing.
+
+Deep-dives the code first to fully understand it, then produces a self-contained, beginner-friendly package with a Claude-guided installer (INSTALL.md + README.md + scripts). Runs a 6-stage interactive flow: Research, Scope, Frame, Write, Validate, Deliver. Outputs to `shares/`.
+
+Example: `/share the daily brief system`
+
+### /task-audit
+
+**Purpose:** Map every recurring task across the business and score automation potential.
+
+Runs a structured interview across 9 business areas, scores each task (Fully Automatable, Partially Automatable, Not Yet, Human-Only), and prioritises by impact x ease. Outputs to `context/task-audit.md` as a living scoreboard for Task Automation %.
 
 ---
 
@@ -190,7 +208,9 @@ Then use `/create-plan` to plan and `/implement` to execute any structural chang
 2. **Work**: Use commands or direct Claude with tasks
 3. **Plan changes**: Use `/create-plan` before significant additions
 4. **Execute**: Use `/implement` to execute plans
-5. **Maintain**: Claude updates CLAUDE.md and context/ as the workspace evolves
+5. **Audit**: Use `/task-audit` to map tasks and track automation progress
+6. **Share**: Use `/share` to package systems for team, clients, or community
+7. **Maintain**: Claude updates CLAUDE.md and context/ as the workspace evolves
 
 ---
 
