@@ -28,13 +28,35 @@ Claude should always orient itself through `/prime` at session start, then act w
 ```
 .
 ├── CLAUDE.md              # This file — core context, always loaded
+├── HISTORY.md             # Workspace changelog — updated every session by /commit
+├── DESIGN.md              # Design system — colours, fonts, video, docs (fill in your brand)
 ├── .claude/
-│   └── commands/          # Slash commands Claude can execute
-│       ├── prime.md       # /prime — session initialization
-│       ├── create-plan.md  # /create-plan — create implementation plans
-│       ├── implement.md   # /implement — execute plans
-│       ├── share.md       # /share — package systems for sharing
-│       └── task-audit.md  # /task-audit — map tasks, score automation potential
+│   ├── commands/          # Slash commands Claude can execute
+│   │   ├── prime.md       # /prime — session initialization
+│   │   ├── create-plan.md # /create-plan — create implementation plans
+│   │   ├── implement.md   # /implement — execute plans
+│   │   ├── commit.md      # /commit — save work, update docs, update changelog
+│   │   ├── install.md     # /install — install AIOS modules
+│   │   ├── brainstorm.md  # /brainstorm — find automation opportunities
+│   │   ├── explore.md     # /explore — shape ideas interactively
+│   │   ├── share.md       # /share — package systems for sharing
+│   │   ├── task-audit.md  # /task-audit — map tasks, score automation potential
+│   │   ├── capture.md     # /capture — quick content idea capture
+│   │   ├── develop.md     # /develop — develop content concept
+│   │   └── schedule.md    # /schedule — schedule content calendar
+│   └── skills/            # Modular skill packs
+│       ├── generate-uat/      # UAT plans from GitHub repos
+│       ├── intent-check/      # AI delegation safety framework
+│       ├── scope-check/       # Client request vs SOW analysis
+│       ├── skill-creator/     # Create or update skills
+│       ├── mcp-integration/   # Model Context Protocol setup
+│       ├── writing-style/     # Anti-AI-slop writing enforcement
+│       ├── vibe-coding/       # Non-technical builder toolkit
+│       ├── build-or-buy/      # Agent deployment decision framework
+│       └── which-agent/       # Agent architecture classifier
+├── docs/                  # Self-documenting workspace
+│   ├── _index.md          # Documentation routing index (scanned by /prime and /commit)
+│   └── _templates/        # Templates for system and integration docs
 ├── context/               # Background context about you and your business
 │   ├── business-info.md   # What the business does, who it serves, key offers
 │   ├── personal-info.md   # Your role, responsibilities, how workspace helps
@@ -58,6 +80,13 @@ Claude should always orient itself through `/prime` at session start, then act w
 ├── artifacts/             # Project-specific artifacts (UAT checklists, etc.)
 ├── shares/                # Packaged systems for sharing (created by /share)
 ├── module-installs/       # AIOS module installers
+│   ├── context-os/        # Guided context builder (interview-based)
+│   ├── content-pipeline/  # Content capture, develop, schedule workflow
+│   ├── github-os/         # GitHub activity collection
+│   ├── ghl-os/            # GoHighLevel pipeline sync
+│   ├── ghl-github-bridge/ # GHL-GitHub two-way sync
+│   ├── calendly-os/       # Calendly booking collection
+│   └── seo-kit/           # SEO audit skill
 └── scripts/               # Automation scripts
 ```
 
@@ -72,6 +101,7 @@ Claude should always orient itself through `/prime` at session start, then act w
 | `reference/` | Scorecard definitions, shell setup, and 6 delivery templates.                      |
 | `artifacts/` | Project-specific outputs (UAT packs, runbooks for specific clients).               |
 | `shares/`    | Packaged systems for sharing. Created by `/share`, ready to hand off.              |
+| `docs/`      | Auto-maintained technical docs. `_index.md` is the routing index.                  |
 | `scripts/`   | Automation tooling.                                                                 |
 
 ---
@@ -113,23 +143,94 @@ Example: `/create-plan add a competitor analysis command`
 
 **Purpose:** Execute a plan created by /create-plan.
 
-Reads the plan, executes each step in order, validates the work, and updates the plan status.
+Reads the plan, executes each step in order, validates the work, updates documentation, and updates the plan status.
 
 Example: `/implement plans/2026-01-28-competitor-analysis-command.md`
+
+### /commit [optional message]
+
+**Purpose:** Save work, update documentation, and keep the changelog current.
+
+Run at the end of every session or after completing meaningful work. Claude will:
+
+1. Stage and commit changed files with a structured commit message
+2. Check if any technical docs in `docs/` need creating or updating
+3. Add an entry to `HISTORY.md`
+4. Offer to push to GitHub
+
+### /install [module-path]
+
+**Purpose:** Install an AIOS module from `module-installs/`.
+
+Reads the module's `INSTALL.md` and executes all installation steps automatically.
+
+Example: `/install module-installs/content-pipeline`
+
+### /brainstorm [optional topic]
+
+**Purpose:** Scan your workspace and find what to build or automate next.
+
+Reads your tasks, processes, and current setup to find manual work that could be automated. Ranks opportunities by impact and feasibility. Run without arguments to scan everything, or with a topic to focus on a specific area.
+
+### /explore [idea]
+
+**Purpose:** Shape an idea into a clear, scoped concept through structured Q&A.
+
+Takes an idea and walks through 5 stages interactively: Discovery, Research, Shape, Scope, Output. Produces a feature exploration doc in `plans/` ready to hand off to `/implement`.
+
+**The cycle:** `/brainstorm` > `/explore` > `/create-plan` > `/implement` > repeat
 
 ### /share [system or feature]
 
 **Purpose:** Package a system or feature from your workspace for sharing.
 
-Deep-dives the code first to fully understand it, then produces a self-contained, beginner-friendly package with a Claude-guided installer (INSTALL.md + README.md + scripts). Runs a 6-stage interactive flow: Research, Scope, Frame, Write, Validate, Deliver. Outputs to `shares/`.
-
-Example: `/share the daily brief system`
+Deep-dives the code first to fully understand it, then produces a self-contained, beginner-friendly package with a Claude-guided installer (INSTALL.md + README.md + scripts). Outputs to `shares/`.
 
 ### /task-audit
 
 **Purpose:** Map every recurring task across the business and score automation potential.
 
-Runs a structured interview across 9 business areas, scores each task (Fully Automatable, Partially Automatable, Not Yet, Human-Only), and prioritises by impact x ease. Outputs to `context/task-audit.md` as a living scoreboard for Task Automation %.
+Runs a structured interview across 9 business areas, scores each task (Fully Automatable, Partially Automatable, Not Yet, Human-Only), and prioritises by impact x ease. Outputs to `context/task-audit.md`.
+
+### /capture [idea]
+
+**Purpose:** Quick content idea capture with classification.
+
+Stores idea as a stub in the content database with channel, format, pillar, and funnel position. Checks for duplicates. Use `/develop` to flesh out a captured idea.
+
+Example: `/capture Why agencies fail at production readiness`
+
+### /develop [#ID or raw idea]
+
+**Purpose:** Develop a content idea into a fully strategized concept.
+
+Loads strategy docs + 7-day context window (recent content, meetings, pipeline state). Interactive: presents strategic positioning, then packaging, with confirmation at each stage.
+
+Example: `/develop #5`
+
+### /schedule [review]
+
+**Purpose:** Interactive content scheduling session.
+
+Shows developed ideas ranked by priority, current schedule gaps, and channel balance. Assigns dates and updates the pipeline. Use `/schedule review` to review existing schedule.
+
+---
+
+## Skills
+
+Skills are modular capability packs that extend what Claude can do. They activate automatically when relevant.
+
+| Skill | What it does |
+|---|---|
+| `generate-uat` | Generate production-accurate UAT plans from GitHub repos |
+| `intent-check` | Catch delegation failures before they happen (4 modes) |
+| `scope-check` | Analyse client requests against your SOW/contract |
+| `skill-creator` | Create or update AgentSkills with scripts and references |
+| `mcp-integration` | Configure Model Context Protocol servers |
+| `writing-style` | Anti-AI-slop enforcement for all prose output |
+| `vibe-coding` | Toolkit for non-technical builders shipping with AI (6 modes) |
+| `build-or-buy` | Agent deployment decision framework using the 4:1 Ratio |
+| `which-agent` | Classify what kind of AI agent a problem actually needs |
 
 ---
 
@@ -148,9 +249,9 @@ This workspace uses a label convention to enable autonomous Claude Code agents t
 
 ### Workflow
 
-1. Write issue using the `agent-task` template → add `agent-ready` label
-2. In a worktree terminal: `claude` → paste issue URL → agent reads and executes
-3. Agent opens PR → adds `human-review` label
+1. Write issue using the `agent-task` template > add `agent-ready` label
+2. In a worktree terminal: `claude` > paste issue URL > agent reads and executes
+3. Agent opens PR > adds `human-review` label
 4. Human reviews and merges
 
 ### What Makes an Issue Agent-Ready
@@ -180,13 +281,6 @@ After any change — adding commands, scripts, workflows, or modifying structure
 
 If yes to any, update the relevant sections. This file must always reflect the current state of the workspace so future sessions have accurate context.
 
-**Examples of changes requiring CLAUDE.md updates:**
-
-- Adding a new slash command → add to Commands section
-- Creating a new output type → document in Workspace Structure or create a section
-- Adding a script → document its purpose and usage
-- Changing workflow patterns → update relevant documentation
-
 ---
 
 ## For Users Downloading This Template
@@ -194,9 +288,10 @@ If yes to any, update the relevant sections. This file must always reflect the c
 To customize this workspace to your own needs:
 
 1. Run `bash scripts/setup.sh` to create worktrees and install shell aliases
-2. Fill in your context documents in `context/` (or run the ContextOS module installer)
-3. Update this CLAUDE.md to reflect your business
-4. Run `cs` (or `claude "/prime"`) to start your first session
+2. Fill in your context documents in `context/` (or run `/install module-installs/context-os`)
+3. Fill in `DESIGN.md` with your brand colours, fonts, and voice
+4. Update this CLAUDE.md to reflect your business
+5. Run `cs` (or `claude "/prime"`) to start your first session
 
 Then use `/create-plan` to plan and `/implement` to execute any structural changes. This ensures everything stays in sync — especially CLAUDE.md, which must always reflect the current state of the workspace.
 
@@ -204,13 +299,15 @@ Then use `/create-plan` to plan and `/implement` to execute any structural chang
 
 ## Session Workflow
 
-1. **Start**: Run `/prime` to load context
+1. **Start**: Run `/prime` to load context (reads HISTORY.md + docs/_index.md)
 2. **Work**: Use commands or direct Claude with tasks
-3. **Plan changes**: Use `/create-plan` before significant additions
-4. **Execute**: Use `/implement` to execute plans
-5. **Audit**: Use `/task-audit` to map tasks and track automation progress
-6. **Share**: Use `/share` to package systems for team, clients, or community
-7. **Maintain**: Claude updates CLAUDE.md and context/ as the workspace evolves
+3. **Ideate**: Use `/brainstorm` > `/explore` to find and shape opportunities
+4. **Plan changes**: Use `/create-plan` before significant additions
+5. **Execute**: Use `/implement` to execute plans
+6. **Save**: Run `/commit` — stages, commits, updates docs and changelog
+7. **Audit**: Use `/task-audit` to map tasks and track automation progress
+8. **Share**: Use `/share` to package systems for team, clients, or community
+9. **Maintain**: Claude updates CLAUDE.md and context/ as the workspace evolves
 
 ---
 
@@ -220,3 +317,5 @@ Then use `/create-plan` to plan and `/implement` to execute any structural chang
 - Plans live in `plans/` with dated filenames for history
 - Outputs are organized by type/purpose in `outputs/`
 - Reference materials go in `reference/` for reuse
+- `HISTORY.md` tracks all meaningful work across sessions
+- `docs/_index.md` routes Claude to the right documentation for each system
