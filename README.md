@@ -12,9 +12,11 @@ Most AI interactions start with re-explaining everything. AIOS solves this by bu
 
 - Claude knows your business, role, and current strategy
 - You never re-explain who you are or what you're doing
-- Structured commands handle common workflows (planning, executing, priming)
+- 12 structured commands handle common workflows (planning, executing, content, auditing)
+- 9 skills extend Claude's capabilities (writing enforcement, agent architecture, scope checking)
 - Worktrees let you run parallel Claude sessions (delivery, commercial, research) without conflicts
 - GitHub issue templates enable autonomous Claude agents to work tickets without hand-holding
+- Module installers add integrations (GHL, GitHub, Calendly, content pipeline) in minutes
 
 ---
 
@@ -50,9 +52,11 @@ After step 4, Claude will read your context files and confirm it understands you
 ```
 .
 ├── CLAUDE.md              # Master context file — always loaded, keep current
+├── HISTORY.md             # Workspace changelog — updated by /commit
+├── DESIGN.md              # Design system — fill in your brand colours, fonts, voice
 ├── .claude/
-│   ├── commands/          # /prime, /create-plan, /implement
-│   └── skills/            # generate-uat, skill-creator, mcp-integration
+│   ├── commands/          # 12 slash commands
+│   └── skills/            # 9 modular skill packs
 ├── context/               # Who you are, your business, strategy, metrics
 │   ├── business-info.md
 │   ├── personal-info.md
@@ -60,6 +64,9 @@ After step 4, Claude will read your context files and confirm it understands you
 │   ├── current-data.md
 │   ├── decision-policy.md
 │   └── import/            # Drop docs here for Claude to ingest
+├── docs/                  # Self-documenting workspace
+│   ├── _index.md          # Documentation routing index
+│   └── _templates/        # System and integration doc templates
 ├── plans/                 # Dated implementation plans
 ├── outputs/               # Deliverables and registers
 ├── artifacts/             # Project-specific outputs
@@ -67,8 +74,7 @@ After step 4, Claude will read your context files and confirm it understands you
 │   ├── scorecard-metrics.md
 │   ├── shell-aliases.md
 │   └── templates/         # 6 delivery templates (SOW, UAT, runbook, etc.)
-├── module-installs/
-│   └── context-os/        # Guided context builder module
+├── module-installs/       # 7 plug-and-play modules
 ├── scripts/
 │   ├── setup.sh           # One-time workspace setup
 │   └── wt.sh              # Worktree helper
@@ -88,6 +94,35 @@ Run these inside a Claude Code session (after `cs` or `claude`):
 | `/prime` | Loads your context and confirms Claude understands your business |
 | `/create-plan [request]` | Creates a detailed implementation plan in `plans/` |
 | `/implement [plan-path]` | Executes a plan created by `/create-plan` |
+| `/commit [message]` | Saves work, updates docs and changelog, offers to push |
+| `/install [module]` | Installs an AIOS module from `module-installs/` |
+| `/brainstorm [topic]` | Scans your workspace for automation opportunities |
+| `/explore [idea]` | Shapes an idea through 5-stage interactive Q&A |
+| `/share [system]` | Packages a system for sharing with installer |
+| `/task-audit` | Maps all tasks and scores automation potential |
+| `/capture [idea]` | Quick content idea capture into pipeline |
+| `/develop [#ID]` | Develops a content idea into a full concept |
+| `/schedule` | Interactive content scheduling session |
+
+**The ideation cycle:** `/brainstorm` > `/explore` > `/create-plan` > `/implement`
+
+---
+
+## Skills
+
+Skills are modular capability packs that activate automatically when relevant:
+
+| Skill | What it does |
+|---|---|
+| `generate-uat` | UAT plans from GitHub repos (reads actual codebase) |
+| `intent-check` | AI delegation safety framework (4 modes) |
+| `scope-check` | Analyse client requests against your SOW/contract |
+| `skill-creator` | Create or update AgentSkills |
+| `mcp-integration` | Model Context Protocol server setup |
+| `writing-style` | Anti-AI-slop enforcement for all prose |
+| `vibe-coding` | Toolkit for non-technical builders (6 modes) |
+| `build-or-buy` | Agent deployment decisions using the 4:1 Ratio |
+| `which-agent` | Agent architecture classifier (3 modes) |
 
 ---
 
@@ -117,7 +152,7 @@ The workspace creates three isolated branches so you can run parallel Claude ses
 | `commercial` | Proposals, content, outbound, pricing |
 | `research` | Analysis, strategy thinking, background research |
 
-Open each branch in a separate terminal → run `cs` → Claude sessions work independently.
+Open each branch in a separate terminal > run `cs` > Claude sessions work independently.
 
 ---
 
@@ -129,10 +164,11 @@ The context files are where your business lives. Fill them in:
 2. **`context/personal-info.md`** — Your role, responsibilities, how the workspace helps you
 3. **`context/strategy.md`** — Current priorities, what success looks like, key decisions
 4. **`context/current-data.md`** — Key metrics, current state, data sources
+5. **`DESIGN.md`** — Your brand colours, fonts, animation style, CTA defaults
 
 Then update `CLAUDE.md` to remove any generic text and reflect your actual business.
 
-> **Tip:** Use the ContextOS module (`module-installs/context-os/`) to have Claude interview you and build these files automatically.
+> **Tip:** Use the ContextOS module (`/install module-installs/context-os`) to have Claude interview you and build context files automatically.
 
 ---
 
@@ -144,8 +180,8 @@ This workspace includes a convention for running Claude Code agents autonomously
 
 1. Write an issue using the **Agent Task** template (`.github/ISSUE_TEMPLATE/agent-task.md`)
 2. Add the `agent-ready` label
-3. In a worktree terminal: `claude` → paste the issue URL → agent reads and executes
-4. Agent opens a PR → adds `human-review` label
+3. In a worktree terminal: `claude` > paste the issue URL > agent reads and executes
+4. Agent opens a PR > adds `human-review` label
 5. You review and merge
 
 ### Labels
@@ -156,8 +192,6 @@ This workspace includes a convention for running Claude Code agents autonomously
 | `agent-in-progress` | Agent is working it |
 | `needs-spec` | Needs more detail before an agent can work it |
 | `human-review` | Work done; needs human sign-off |
-
-An agent-ready issue must contain: context, precise task, testable acceptance criteria, file paths, out-of-scope boundaries, and verification steps.
 
 ---
 
@@ -193,11 +227,17 @@ Every Monday (~90 min):
 
 `module-installs/` contains plug-and-play modules that extend the workspace:
 
-| Module | What it does |
-|---|---|
-| `context-os/` | Guided interview to build all 4 context files from scratch (30–45 min) |
+| Module | What it does | Setup time |
+|---|---|---|
+| `context-os/` | Guided interview to build all 4 context files | 30-45 min |
+| `content-pipeline/` | Content capture, develop, schedule workflow with strategy workshop | 30-45 min |
+| `github-os/` | GitHub commit and PR activity collection | 10-15 min |
+| `ghl-os/` | GoHighLevel pipeline, contacts, invoices sync | 10-15 min |
+| `ghl-github-bridge/` | Two-way sync between GHL deals and GitHub issues | 10-15 min |
+| `calendly-os/` | Calendly call booking collection | 10-15 min |
+| `seo-kit/` | SEO audit skill with checklists and schema patterns | 10-15 min |
 
-To install: open the module's `INSTALL.md` and follow the instructions (or tell Claude to run it).
+To install: `/install module-installs/content-pipeline` (or any module path).
 
 ---
 
