@@ -8,6 +8,14 @@
 
 ---
 
+## 2026-05-01
+
+### Lead Engine Framework Added
+- New `scripts/lead-engine/` directory with end-to-end lead generation pipeline (CSV → AI enrichment → personalised outreach → Vapi voice qualification → CRM booking)
+- 7 components: orchestrator, enrichment + ICP scoring, outreach drafting, Vapi webhook handler, agent deployment CLI, RAG loader, voice agent config
+- ICP rubric, outreach voice, voice agent prompt, and RAG content are placeholders — users customise to their business before running
+- New `scripts/config.py` shared env loader
+
 ## 2026-03-28
 
 ### Template Initialized
