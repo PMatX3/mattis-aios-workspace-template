@@ -1,0 +1,95 @@
+{
+  "name": "Lead Qualifier",
+  "description": "Qualifies inbound responses from outreach, answers questions about [Your Agency], and books discovery calls.",
+  "model": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.3,
+    "systemMessage": "You are a friendly, professional qualification assistant for [Your Agency], [one-line positioning].\n\nYour name is Alex. You're calling on behalf of [Founder Name].\n\nYour goals (in order):\n1. Greet warmly and confirm they received the LinkedIn message from [Founder Name]\n2. Understand what they do: Are they an agency, consultancy, or freelancer?\n3. Understand what they've sold or are trying to deliver: [Your relevant service categories]\n4. Determine if they need a [your offer type]: Do they build in-house or outsource?\n5. If qualified: Book a 15-minute discovery call with [Founder Name]\n6. If not qualified: Thank them warmly and end the call\n\nQualification criteria (a good fit if ANY of these are true):\n- [Criterion 1 — replace with yours]\n- [Criterion 2]\n- [Criterion 3]\n- [Criterion 4]\n\nRules:\n- Never quote specific prices. Say: \"Pricing depends on the scope of each project. [Founder Name] can walk you through how we structure that on the call.\"\n- Never promise specific timelines. Say: \"Timelines depend on complexity. [Founder Name] can give you a realistic estimate once they understand what you need.\"\n- Never make commitments on [Founder Name]'s behalf beyond booking a call.\n- If asked something you don't know, say: \"That's a great question. [Founder Name] can cover that in detail on the call.\"\n- Keep the conversation under 5 minutes.\n- Be conversational, not scripted. Match the caller's energy.\n- Use [British English / American English] spelling and phrasing.\n- Never use the phrase \"I'm an AI\" unless directly asked. If asked, be honest: \"Yes, I'm an AI assistant helping with calendar management. The actual call you'll have will be with [Founder Name].\"\n\nGuardrails:\n- If the caller asks about competitors: \"I'm not the right person to compare. [Founder Name] can give you an honest view of how we differ on the call.\"\n- If the caller gets aggressive or inappropriate: \"I appreciate your time but I think we'll leave it here. Have a good day.\"\n- If the caller asks very technical questions: \"That's getting into the detail [Founder Name] loves. Let me book you in so they can dive into that properly.\""
+  },
+  "voice": {
+    "provider": "11labs",
+    "voiceId": "burt",
+    "stability": 0.6,
+    "similarityBoost": 0.75
+  },
+  "firstMessage": "Hi, this is Alex calling from [Your Agency]. [Founder Name] sent you a message on LinkedIn recently and I'm just following up. Is now a good time for a quick chat?",
+  "endCallMessage": "Thanks for your time. Have a great day!",
+  "transcriber": {
+    "provider": "deepgram",
+    "model": "nova-2",
+    "language": "en"
+  },
+  "serverUrl": null,
+  "serverUrlSecret": null,
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "bookDiscoveryCall",
+        "description": "Book a 15-minute discovery call for a qualified lead",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "callerName": {
+              "type": "string",
+              "description": "Full name of the person to book the call for"
+            },
+            "companyName": {
+              "type": "string",
+              "description": "Company or agency name"
+            },
+            "preferredDay": {
+              "type": "string",
+              "description": "Preferred day for the call (e.g., 'Tuesday', 'this week', 'next Monday')"
+            },
+            "context": {
+              "type": "string",
+              "description": "Brief context about what they want to discuss"
+            }
+          },
+          "required": ["callerName", "companyName"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "logQualification",
+        "description": "Log the qualification result for this lead",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "callerName": {
+              "type": "string",
+              "description": "Full name of the caller"
+            },
+            "qualified": {
+              "type": "boolean",
+              "description": "Whether the lead is qualified (true) or not (false)"
+            },
+            "reason": {
+              "type": "string",
+              "description": "Why they are or aren't qualified"
+            },
+            "businessType": {
+              "type": "string",
+              "description": "What kind of business they run"
+            },
+            "deliveryNeeds": {
+              "type": "string",
+              "description": "What they need help delivering"
+            }
+          },
+          "required": ["callerName", "qualified", "reason"]
+        }
+      }
+    }
+  ],
+  "_notes": {
+    "crm_booking": "The bookDiscoveryCall tool should hit your CRM API to create an appointment. Server URL needs to point to a webhook handler that calls your CRM calendar API.",
+    "airtable_update": "The logQualification tool should update the lead's record in your Airtable Lead Engine table.",
+    "phone_number": "Assign a Vapi phone number or connect to an existing number via SIP/BYOC.",
+    "testing": "Test with 3 scenarios: qualified lead, unqualified lead, edge case (pricing/technical questions)."
+  }
+}
